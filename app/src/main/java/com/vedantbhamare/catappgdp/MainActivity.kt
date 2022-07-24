@@ -15,14 +15,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        CoroutineScope(Dispatchers.IO).launch {
-            val call = APIService.api_instance.getCats()
-            if (call.isSuccessful) {
-                val cats = call.body()
-                withContext(Dispatchers.Main) {
-                    binding.recyclerView.adapter = cats?.let { RecyclerAdapter(it) }
+        val call = APIService.api_instance.getCats()
+        call.enqueue(object : Callback<List<CatModel>> {
+            override fun onResponse(
+                call: Call<List<CatModel>>,
+                response: Response<List<CatModel>>
+            ) {
+                if(response.isSuccessful) {
+                    val res = response.body()
+                    binding.recyclerView.adapter = res?.let { RecyclerAdapter(it) }
                 }
             }
-        }
+
+            override fun onFailure(call: Call<List<CatModel>>, t: Throwable) {
+                Log.d("API Fetch", "Error while fetching", t)
+            }
+        })
     }
 }

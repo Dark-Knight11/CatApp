@@ -7,7 +7,7 @@ import retrofit2.http.GET
 
 interface ApiInterface {
     @GET("breeds")
-    suspend fun getCats(): Response<List<CatModel>>
+    fun getCats(): Response<List<CatModel>>
 }
 
 object APIService {
